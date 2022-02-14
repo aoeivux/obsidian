@@ -93,9 +93,12 @@ INSERT INTO `user` (`id`, `name`, `pwd`) VALUES
             </dataSource>  
         </environment>  
     </environments>  
+
+<!-- 重要: 每一个Mapper.xml都需要绑定mybatis核心配置文件mybatis-config.xml-->
     <mappers>  
-        <mapper resource="org/mybatis/example/BlogMapper.xml"/>  
+        <mapper resource="com/aoeivux/dao/UserMapper.xml"/>  
     </mappers>  
+
 </configuration>
 
 ```
@@ -275,7 +278,7 @@ public class MybatisUtil {
 ```
 
 
-## 3、测试
+# 3、测试
 
 
 与main目录同级
@@ -314,7 +317,7 @@ public class UserDaoTest {
 
 
 
- ## 4、常错点
+ # 4、常错点
 
  ### 1、 mapper未绑定
 
@@ -434,4 +437,279 @@ Caused by: com.sun.org.apache.xerces.internal.impl.io.MalformedByteSequenceExcep
 
 		将mybatis核心配置文件mybatis-config.xml和mapper.xml配置文件中的中文字符删除
 		
-	
+
+
+
+# 5、CRUD增删改查
+
+## 5.1、mapper   namespace 
+namespace中绑定的包名要和dao/mapper中的接口名字一致，如图：
+![[temp/Pasted image 20220214161641.png]]
+
+
+![[temp/Pasted image 20220214161651.png]]
+
+
+
+
+*注意: 增删改需要进行事务提交*
+## 5.2 、insert
+	增加插入语句：
+```xml
+	<insert id="insertUser" parameterType="com.aoeivux.pojo.User">  
+insert into user (id, name, pwd) values (#{id}, #{name}, #{pwd});</insert>
+```
+
+## 5.3、delete
+	删除语句：
+```xml
+<delete id="deleteUser" parameterType="int">  
+ delete from USER where id = #{id}</delete>
+```
+
+## 5.4、update
+	修改语句：
+```xml
+<update id="updateUser" parameterType="com.aoeivux.pojo.User">  
+ update user set name = #{name}, pwd = #{pwd} where id = #{id}</update>
+```
+
+## 5.5、select
+	查询全部用户语句：
+```xml
+<select id="getUser" resultType="com.aoeivux.pojo.User">  
+ select * from user;</select>  
+```
+
+
+	查询指定条件用户：
+```xml
+<select id="getUserByID" parameterType="int" resultType="com.aoeivux.pojo.User">  
+ select * from USER where id = #{id}</select>
+```
+
+## 5.6、万能的Map
+
+```java
+<select id="getUserMap" parameterType="map" resultType="com.aoeivux.pojo.User">  
+ select * from USER where id = #{demoId}
+ </select>
+```
+根据Map的键进行查找等操作，适合于字段多属性多的情况
+
+## 5.7、模糊查询
+
+*interface*
+```java
+//模糊查询  
+List<User> userLike(String value);
+```
+
+
+*mapper.xml*
+
+```xml
+<select id="userLike" parameterType="String" resultType="com.aoeivux.pojo.User">  
+ select * from user where name like #{value}
+</select>
+```
+
+*test*
+```java
+@Test  
+public void getUserLike(){  
+    SqlSession sqlSession = MybatisUtil.getSqlSession();  
+    UserMapper mapper = sqlSession.getMapper(UserMapper.class);  
+    List<User> users = mapper.userLike("%李%");  
+  
+    for (User user : users) {  
+        System.out.println(user);  
+    }  
+}
+```
+
+
+
+ 
+## 5.8、小结
+
+*层级目录*
+![[temp/Pasted image 20220214174132.png]]
+
+
+*参数问题*
+
+- Mapper.xml语句中通过#{}传递参数，{}内的参数是pojo实体类里面的id、name、pwd
+
+- where id = #{id} 中第一个id是数据库里面的id，第二个是pojo实体类里面的id
+
+
+*步骤*
+
+1.  DAO里面的UserMapper接口编写抽象类
+```java
+package com.aoeivux.dao;  
+  
+import com.aoeivux.pojo.User;  
+  
+import java.util.List;  
+  
+public interface UserMapper {  
+  
+    //查询全部用户  
+ List<User> getUser();  
+  
+    //根据用户ID查询用户  
+ User getUserByID(int id);  
+  
+    //插入一个用户  
+ int insertUser(User user);  
+  
+    //修改一个User  
+ int updateUser(User user);  
+  
+    //删除一个用户  
+ int deleteUser(int id);  
+  
+}
+```
+
+
+2. UserMapper.xml指定接口与编写sql语句
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper  
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+  
+<mapper namespace="com.aoeivux.dao.UserMapper">  
+  
+    <select id="getUser" resultType="com.aoeivux.pojo.User">  
+ select * from user; </select>  
+  
+  
+    <select id="getUserByID" parameterType="int" resultType="com.aoeivux.pojo.User">  
+ select * from USER where id = #{id} </select>  
+  
+    <insert id="insertUser" parameterType="com.aoeivux.pojo.User">  
+ insert into user (id, name, pwd) values (#{id}, #{name}, #{pwd}); </insert>  
+  
+    <update id="updateUser" parameterType="com.aoeivux.pojo.User">  
+ update user set name = #{name}, pwd = #{pwd} where id = #{id} </update>  
+  
+    <delete id="deleteUser" parameterType="int">  
+ delete from USER where id = #{id} </delete>  
+  
+  
+</mapper>
+```
+
+
+3. 测试类
+
+```java
+package com.aoeivux.dao;  
+  
+import com.aoeivux.pojo.User;  
+import com.aoeivux.util.MybatisUtil;  
+import org.apache.ibatis.session.SqlSession;  
+import org.junit.Test;  
+  
+import java.util.List;  
+  
+public class UserDaoTest {  
+
+
+//查询全部用户
+    @Test  
+ public void test() {  
+  
+        SqlSession sqlSession = MybatisUtil.getSqlSession();  
+        UserMapper mapper = sqlSession.getMapper(UserMapper.class);  
+        List<User> user = mapper.getUser();  
+  
+        for (User userList : user) {  
+            System.out.println(userList);  
+        }  
+  
+        sqlSession.close();  
+    }  
+
+
+//查询指定ID用户
+    @Test  
+ public void getUserByID(){  
+        SqlSession sqlSession = MybatisUtil.getSqlSession();  
+        UserMapper mapper = sqlSession.getMapper(UserMapper.class);  
+  
+        User userByID = mapper.getUserByID(2);  
+        System.out.println(userByID);  
+  
+        sqlSession.close();  
+  
+    }  
+
+
+//增加插入新用户
+    @Test  
+ //insert  
+ public void insertUser(){  
+        SqlSession sqlSession = MybatisUtil.getSqlSession();  
+        UserMapper mapper = sqlSession.getMapper(UserMapper.class);  
+        int res = mapper.insertUser(new User(5, "aoeivux", "1212121312128"));  
+  
+        if (res > 0)  
+            System.out.println("insert ok!");  
+  
+        sqlSession.commit();  
+        sqlSession.close();  
+  
+        }  
+
+
+//修改用户指定字段语句
+        @Test  
+ public void updateUser(){  
+        SqlSession sqlSession = MybatisUtil.getSqlSession();  
+            UserMapper mapper = sqlSession.getMapper(UserMapper.class);  
+            int res = mapper.updateUser(new User(4, "zyx", "adsada"));  
+            if (res > 0 ){  
+                System.out.println("更新成功");  
+            }else{  
+                System.out.println("no");  
+            }  
+  
+            sqlSession.commit();  
+            sqlSession.close();  
+  
+        }  
+
+
+//删除指定用户的语句
+        @Test  
+ public void deleteUser(){  
+            SqlSession sqlSession = MybatisUtil.getSqlSession();  
+            UserMapper mapper = sqlSession.getMapper(UserMapper.class);  
+  
+            int i = mapper.deleteUser(5);  
+  
+            if( i > 0 ){  
+                System.out.println("ok");  
+            }  
+  
+            sqlSession.commit();  
+            sqlSession.close();  
+        }  
+    }
+```
+
+
+# 6、配置解析
+## 1、核心配置文件
+*官网给出的配置结构：*
+![[temp/Pasted image 20220214213924.png]]
+ mybatis-config.xml 
+
+
+## 2、环境配置(Enviroment)
+
