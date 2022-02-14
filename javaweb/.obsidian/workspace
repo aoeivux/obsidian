@@ -1,0 +1,97 @@
+{
+  "main": {
+    "id": "4d5878b11a2a78c5",
+    "type": "split",
+    "children": [
+      {
+        "id": "5e7390366bae2dfa",
+        "type": "leaf",
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "jdbc.md",
+            "mode": "source",
+            "source": false
+          }
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "a92cd5f3c01b5c68",
+    "type": "split",
+    "children": [
+      {
+        "id": "94c72b0b6871f55e",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ed694585353555dd",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "181595fc1b15f884",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "f3591777c90d9a70",
+    "type": "split",
+    "children": [
+      {
+        "id": "4985a38ed8e8e474",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "028bee82a05bffe0",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "jdbc.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "active": "5e7390366bae2dfa",
+  "lastOpenFiles": [
+    "jdbc.md",
+    "dotfile.md",
+    "JSP原理.md",
+    "Servlet 原理.md"
+  ]
+}

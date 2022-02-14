@@ -1,0 +1,131 @@
+{
+  "main": {
+    "id": "36a9ffa77acf9bdc",
+    "type": "split",
+    "children": [
+      {
+        "id": "b7e36fe172876b23",
+        "type": "leaf",
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "Mybatis/mybatis-01.md",
+            "mode": "source",
+            "source": false
+          }
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "37c0a0af0daac6e4",
+    "type": "split",
+    "children": [
+      {
+        "id": "354ecfb68224c9f4",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "9e668ed513221077",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "c8aa0483d003a79a",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "a9ed7af154adb007",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Mybatis/mybatis-01.md"
+              }
+            }
+          }
+        ],
+        "currentTab": 2
+      }
+    ],
+    "direction": "horizontal",
+    "width": 283
+  },
+  "right": {
+    "id": "e4c7481fa74119ef",
+    "type": "split",
+    "children": [
+      {
+        "id": "b7074d8ec0f46abb",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "51c9b6d8b2d673be",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Mybatis/mybatis-01.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": true,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "2ff1d8c4b3083b37",
+            "type": "leaf",
+            "state": {
+              "type": "advanced-tables-toolbar",
+              "state": {}
+            }
+          },
+          {
+            "id": "e66efcd917b93a23",
+            "type": "leaf",
+            "state": {
+              "type": "calendar",
+              "state": {}
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "horizontal",
+    "width": 179,
+    "collapsed": true
+  },
+  "active": "b7e36fe172876b23",
+  "lastOpenFiles": [
+    "Mybatis/mybatis-01.md",
+    "temp/Pasted image 20220203145712.png",
+    "temp/Pasted image 20220211193106.png",
+    "temp/Pasted image 20220203143729.png",
+    "temp/Pasted image 20220203143711.png",
+    "temp/Pasted image 20220203134608.png",
+    "temp/Pasted image 20220203134523.png",
+    "temp/Pasted image 20220203134507.png",
+    "temp/Pasted image 20220203134448.png",
+    "javaweb/jdbc.md"
+  ]
+}
