@@ -713,3 +713,28 @@ public class UserDaoTest {
 
 ## 2、环境配置(Enviroment)
 
+## 3、 类型别名(typeAliases)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
