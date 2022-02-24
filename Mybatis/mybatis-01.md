@@ -72,7 +72,7 @@ INSERT INTO `user` (`id`, `name`, `pwd`) VALUES
 
 ## 2.2、 创建一个普通Maven模块
 
-### 编写mybatis核心配置文件
+### 2.2.1、编写mybatis核心配置文件
 
 ```xml
 
@@ -82,12 +82,12 @@ INSERT INTO `user` (`id`, `name`, `pwd`) VALUES
  "http://mybatis.org/dtd/mybatis-3-config.dtd">  
 <configuration>  
     <environments default="development">  
-        2  
+          
         <environment id="development">  
             <transactionManager type="JDBC"/>  
             <dataSource type="POOLED">  
                 <property name="driver" value="com.mysql.cj.jdbc.Driver"/>  
-                <property name="url" value="useSSL=true&amp;characterEncoding=UTF-8&amp;useUnicode=true&amp;serverTimezone=GMT"/>  
+                <property name="url" value="jdbc:mysql://localhost:3306/mybatis?useSSL=true&characterEncoding=UTF-8&useUnicode=true&serverTimezone=GMT "/>  
                 <property name="username" value="root"/>  
                 <property name="password" value="Atheonealone37."/>  
             </dataSource>  
@@ -103,6 +103,13 @@ INSERT INTO `user` (`id`, `name`, `pwd`) VALUES
 
 ```
 
+### 2.2.2、通过db.properties外部配置values
+```properties
+username=root  
+password=Atheonealone37.  
+url=jdbc:mysql://localhost:3306/mybatis?useSSL=true&characterEncoding=UTF-8&useUnicode=true&serverTimezone=GMT  
+driver=com.mysql.cj.jdbc.Driver
+```
 
 ## 2.3、Maven导入相应的依赖
 dependencies依赖
@@ -703,7 +710,7 @@ public class UserDaoTest {
     }
 ```
 
-
+	
 # 6、配置解析
 ## 1、核心配置文件
 *官网给出的配置结构：*
@@ -714,7 +721,44 @@ public class UserDaoTest {
 ## 2、环境配置(Enviroment)
 
 ## 3、 类型别名(typeAliases)
+```xml
+<typeAliases>  
+ <typeAlias type="com.aoeivux.pojo.User" alias="User"/>  
+</typeAliases>
+```
 
+
+
+
+
+# 7、日志
+设置名：logImpl   
+
+设置值： SLF4J
+				 LOG4J(deprecated since 3.5.9) 
+				 LOG4J2
+				 JDK_LOGGING 
+				 COMMONS_LOGGING 
+				 STDOUT_LOGGING （日志工厂）
+				 NO_LOGGING
+
+
+## 7.1 日志工厂
+```xml
+<settings>  
+ <setting name="logImpl" value="STDOUT_LOGGING"/>  
+</settings>
+```
+
+
+# 8、分页
+```java
+select * from mybatis limit 0 2
+```
+- 使用java层面的代码
+- 使用sql语句
+- 使用插件
+- 使用rowbounds
 
 
 
