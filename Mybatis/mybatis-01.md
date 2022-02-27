@@ -1,4 +1,4 @@
-# 1、Mybatis初认识
+	# 1、Mybatis初认识
 
 ## 1.1、什么是Mybatis
 
@@ -796,21 +796,256 @@ select * from mybatis limit 0 2
 接口设计与非接口设计是针对复用技术而言的，与面向对象（过程）不是一个问题。更多的体现就是对系统整体的架构。
 
 
+## 注解操作CRUD
+
+
+我们可以在工具类创建的时候实现自动提交事务!
+
+ ![[temp/Pasted image 20220225110546.png]]
 
 
 
+```java
+package com.aoeivux.dao;  
+  
+import com.aoeivux.pojo.User;  
+import org.apache.ibatis.annotations.*;  
+  
+import java.util.List;  
+  
+public interface UserMapper {  
+  
+    //查询全部用户  
+ @Select("select * from user")  
+    List<User> getUser();  
+  
+    @Insert("insert into user(id,name,pwd) values(#{id}, #{username}, #{password})")  
+    int insertUser(User user);  
+  
+    @Delete("delete from user  where id = #{id}")  
+    void deleteUser(@Param("id") int id);  
+  
+    @Update("update user set name = #{username},pwd = #{password} where id = #{id}")  
+    void updateUser(User user);  
+  
+    //sql语句的userid和@Param中的userid对应  
+ @Select("select * from user where id = #{userid}")  
+    User getUserById(@Param("userid") int id);  
+  
+  
+}
+```
 
 
 
+- 注意点
+1. 当传入的参数是User类型的时候，sql语句中等号左边是数据库的字段属性名，等号右边的是pojo实体类中的字段属性名
+2. ![[temp/Pasted image 20220225114950.png]]
+![[temp/Pasted image 20220225114941.png]]
+
+![[temp/Pasted image 20220225115016.png]]
+
+
+2. 当传入的参数不是User类型的时候，可以使用注解的方式
 
 
 
+3. #{} 和 {}的区别
+
+
+```java
+1. #将传入的数据都当成一个字符串，会对自动传入的数据加一个双引号。如：order by #user_id#，如果传入的值是111,那么解析成sql时的值为order by "111", 如果传入的值是id，则解析成的sql为order by "id".
+　　
+2. $将传入的数据直接显示生成在sql中。如：order by $user_id$，如果传入的值是111,那么解析成sql时的值为order by user_id,  如果传入的值是id，则解析成的sql为order by id.
+　　
+3. #方式能够很大程度防止sql注入。
+　　
+4.$方式无法防止Sql注入。
+
+5.$方式一般用于传入数据库对象，例如传入表名.
+　　
+6.一般能用#的就别用$.
+```
 
 
 
+# 10、多对一处理
+
+![[temp/Pasted image 20220226210059.png]]
+
+多对一：
+-  多个学生对应一个老师
+
+需求：获取所有学生及对应老师的信息
+    思路：
+
+        1. 获取所有学生的信息
+
+        3. 根据获取的学生信息的老师ID->获取该老师的信息
+
+        4. 思考问题，这样学生的结果集中应该包含老师，该如何处理呢，数据库中我们一般使用关联查询？
+		             做一个结果集映射：StudentTeacher
+		             StudentTeacher结果集的类型为 Student
+		             学生中老师的属性为teacher，对应数据库中为tid。
+		             多个 学生关联一个老师=> 一对一，一对多
+		             查看官网找到：association – 一个复杂类型的关联；使用它来处理关联查询
+
+## 方法一：按照查询嵌套处理(子查询)
+
+```java
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aoeivux.dao.UserMapper">
+
+
+    <select id="getStudent" resultMap="StudentTeacher">
+        select * from student;
+    </select>
+
+<!-- 
+    property 对应的是pojo实体类的属性
+    column   对应的是数据库的属性  
+   
+   
+   association 对应一个对象 这里对应一个Teacher
+   collection  对应一个集合
+-->
+    <resultMap id="StudentTeacher" type="Student">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <association property="teacher" column="tid" javaType="Teacher" select="getTeacher"/>
+    </resultMap>
+
+    <select id="getTeacher" resultType="Teacher">
+        select * from teacher where id=#{id};
+    </select>
+
+</mapper>
+```
+
+
+查询后的结果：
+![[temp/Pasted image 20220227161645.png]]
+
+未使用resultMap的assciation进行设置的结果：
+![[temp/Pasted image 20220227161817.png]]
+
+## 10.1、小结
+
+	对于多表联合查询，需要使用resultMap并在assiciation中进行嵌套查询
 
 
 
+![[temp/Pasted image 20220227161931.png]]
+如上图将student和teacher两表联合进行查询：
+![[temp/Pasted image 20220227162010.png]]
+
+![[temp/Pasted image 20220227162130.png]]
 
 
+## 方法二:按照结果嵌套查询(链表查询或者内查询)
+```xml
+    <select id="getStudent2" resultMap="StudentTeacher2">
+        select s.id sid, s.name sname,t.id tid, t.name tname
+        from student s, teacher t
+        where s.tid = t.id
+    </select>
+
+    <resultMap id="StudentTeacher2" type="Student">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <association property="teacher" javaType="Teacher">
+            <result property="id" column="tid"/>
+            <result property="name" column="tname"/>
+        </association>
+    </resultMap>
+
+```
+
+
+
+# 11、一对多
+一个老师对应多个学生
+
+刚才的多对一，在pojo Student实体类中添加了Teacher属性，而现在的一对多则是在pojo Teacher实体类中添加了多个Student属性
+
+```xml
+  
+<select id="getTeacher" resultMap="StudentTeacher">  
+ select s.id sid, s.name sname, s.tid stid, t.id teacherid, t.name tname from student s, teacher t where s.tid = t.id and t.id = #{id}</select>  
+  
+<resultMap id="StudentTeacher" type="Teacher">  
+    <result property="id" column="teacherid"/>  
+    <result property="name" column="tname"/>  
+    <collection property="students" ofType="Student">  
+        <result property="id" column="sid"/>  
+        <result property="name" column="sname"/>   
+        <result property="tid" column="stid"/>  
+    </collection>  
+</resultMap>
+
+```
+ 
+
+
+
+ ## 11.1、方法一：子查询
+ ```xml
+     <select id="getTeacher2" resultMap="StudentTeacher2">
+        select * from teacher, student
+		where teacher.id = student.tid and teacher.id = #{id}
+    </select>
+
+    <resultMap id="StudentTeacher2" type="Teacher">
+        <collection property="students" javaType="ArrayList" ofType="Student" select="getStudent" column="id"/>
+    </resultMap>
+
+    <select id="getStudent" resultType="Student">
+        select * from student
+    </select>
+
+```
+
+
+
+## 11.2、方法二：链表查询
+
+```xml
+
+<select id="getTeacher" resultMap="StudentTeacher">  
+ select s.id sid, s.name sname, s.tid stid, t.id teacherid, t.name tname from student s, teacher t where s.tid = t.id and t.id = #{id}</select>  
+  
+<resultMap id="StudentTeacher" type="Teacher">  
+    <result property="id" column="teacherid"/>  
+    <result property="name" column="tname"/>  
+    <collection property="students" ofType="Student">  
+        <result property="id" column="sid"/>  
+        <result property="name" column="sname"/>  
+        <result property="tid" column="stid"/>  
+    </collection>  
+</resultMap>
+
+```
+
+
+
+```java
+Teacher(id=0, name=秦老师, students=[Student{id=1, name='小明', tid=1}, 
+       Student{id=2, name='小红', tid=1}, Student{id=3, name='小张', tid=1}, 
+       Student{id=4, name='小李', tid=1}, Student{id=5, name='小王', tid=1}])
+
+```
+
+
+## 小结
+
+
+- 多对一：association
+- 一对多：collection
+
+- javaType：用来指定实体类中属性的类型
+- ofType：用来指定引用到数据结构ArrayList的pojo实体类的属性类型
 
